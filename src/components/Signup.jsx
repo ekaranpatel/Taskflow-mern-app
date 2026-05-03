@@ -23,16 +23,22 @@ const Signup = () => {
     e.preventDefault();
     setError(""); // Clear any old errors when the user clicks submit again
     
-    try {
-       const res = await axios.post('http://localhost:3000/api/signup', formData);
-      console.log('successfully registered', res.data);
-      navigate("/login");
-    } catch (err) {
-      console.log(err);
-      // Grab the specific error from the backend, or show a default message
-      setError(err.response?.data?.error || "Signup failed. Please try again.");
-    }
-  };
+     // 1. Define the URL at the top of your file
+const API_URL = window.location.hostname === "localhost" 
+  ? "http://localhost:3000" 
+  : "https://taskflow-mern-app.onrender.com";
+
+// ... inside your handleSubmit function ...
+try {
+  // 2. Use backticks `` and ${} to inject the variable
+  const res = await axios.post(`${API_URL}/api/signup`, formData);
+  
+  console.log('successfully registered', res.data);
+  navigate("/login");
+} catch (err) {
+  console.log(err);
+  setError(err.response?.data?.error || "Signup failed. Please try again.");
+}
 
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-950 via-purple-950 to-pink-950 flex items-center justify-center p-4">
