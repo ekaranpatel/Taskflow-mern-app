@@ -1,29 +1,33 @@
-import React, { useState, useEffect } from "react";
+ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "./components/Header";
 import Statsgrid from "./components/Statsgrid";
 import Input from "./components/Input";
 import Todolist from "./components/Todolist";
-import Logout from "./components/Logout"
+import Logout from "./components/Logout";
+
+// This variable handles switching between your local setup and Render automatically
+const API_URL = window.location.hostname === "localhost" 
+  ? "http://localhost:3000" 
+  : "https://taskflow-mern-app.onrender.com";
+
 function Dashboard() {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
   const [editingId, setEditingId] = useState(null);
 
-  // const BASE_URL = "http://localhost:3001";
-// 1. Get the token from storage
-  
   useEffect(() => {
     const token = localStorage.getItem('token'); 
 
-  // 2. Setup the config with headers
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    // Updated with dynamic API_URL and backticks
     axios
-      .get(`http://localhost:3000/api/get`,config)
+      .get(`${API_URL}/api/get`, config)
       .then((result) => {
         setTodos(result.data);
       })
@@ -32,9 +36,11 @@ function Dashboard() {
 
   const handleAdd = () => {
     if (!input.trim()) return;
-const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
+
+    // Updated with dynamic API_URL and backticks
     axios
-      .post(`http://localhost:3000/api/add`, { tasks: input },{ 
+      .post(`${API_URL}/api/add`, { tasks: input }, { 
         headers: {
           Authorization: `Bearer ${token}` 
         }
@@ -46,13 +52,14 @@ const token = localStorage.getItem('token')
       .catch((err) => console.log("Add error:", err));
   };
 
-   const handleDelete = (id) => {
-    const token = localStorage.getItem('token'); // 1. Get token
+  const handleDelete = (id) => {
+    const token = localStorage.getItem('token');
     
+    // Updated with dynamic API_URL and backticks
     axios
-      .delete(`http://localhost:3000/api/delete/${id}`, {
+      .delete(`${API_URL}/api/delete/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}` // 2. Send token with request
+          Authorization: `Bearer ${token}`
         }
       }) 
       .then(() => {
@@ -60,12 +67,15 @@ const token = localStorage.getItem('token')
       })
       .catch((err) => console.error("Delete error:", err));
   };
+
   const handleSaveEdit = (id, newTasksText) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
+
+    // Updated with dynamic API_URL and backticks
     axios
-      .put(`http://localhost:3000/api/update/${id}`, { tasks: newTasksText },{ 
+      .put(`${API_URL}/api/update/${id}`, { tasks: newTasksText }, { 
         headers: {
-          Authorization: `Bearer ${token}` // The Authorization header
+          Authorization: `Bearer ${token}` 
         }
       })
       .then((res) => {
@@ -82,8 +92,10 @@ const token = localStorage.getItem('token')
     <div
       className="min-h-screen bg-linear-to-br from-indigo-950 via-purple-950 to-pink-950 p-3 sm:p-6 relative overflow-hidden"
       style={{ minHeight: "100vh" }}
-    ><div className="flex justify-end">
-<Logout /></div>
+    >
+      <div className="flex justify-end">
+        <Logout />
+      </div>
       <Header />
       <Statsgrid />
 
