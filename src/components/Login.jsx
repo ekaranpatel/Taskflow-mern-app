@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Authcontext";
-import axios from 'axios'
+import axios from 'axios';
+
+// This variable automatically switches between your local machine and your live backend
+const API_URL = window.location.hostname === "localhost" 
+  ? "http://localhost:3000" 
+  : "https://taskflow-mern-app.onrender.com";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,14 +21,16 @@ const Login = () => {
     setError("");
 
     try { 
-      const res = await axios.post("http://localhost:3000/api/login", { email, password });
+      // Using backticks and ${API_URL} to make the request dynamic
+      const res = await axios.post(`${API_URL}/api/login`, { email, password });
       login(res.data.user, res.data.token); 
-      navigate("/"); // <-- Add this! (Or navigate("/dashboard") depending on your route setup)
+      
+      console.log('Login successful!', res.data);
+      navigate("/"); 
     } catch (err) { 
-      console.log(err)
-      setError(err.response?.data?.error || "Login failed");
+      console.log("Login Error:", err);
+      setError(err.response?.data?.error || "Login failed. Please check your credentials.");
     }
-    
   };
 
   return (
@@ -55,7 +63,6 @@ const Login = () => {
             />
           </div>
 
-      
           <div className="grid gap-2">
             <div className="flex justify-between items-center ml-1">
               <label className="text-sm font-medium text-purple-100">Password</label>
@@ -71,7 +78,6 @@ const Login = () => {
             />
           </div>
 
-          
           <button
             type="submit"
             className="mt-2 w-full bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-3 rounded-xl shadow-lg transform active:scale-95 transition-all duration-200"
